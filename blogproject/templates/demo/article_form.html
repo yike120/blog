@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<form method="post">
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% for field in form %}
+    <div>
+      {% for error in field.errors %}
+        <p style="color: red">
+          {{ error }}
+        </p>
+      {% endfor %}
+      <label>
+        {% if field.field.required %}<span style="color: red">*</span>{% endif %}
+        {{ field.label }}
+      </label>
+      {{ field }}
+    </div>
+  {% endfor %}
+  <input type="submit" value="提交">
+</form>
+</body>
+</html>

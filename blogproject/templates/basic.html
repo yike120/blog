@@ -1,0 +1,126 @@
+{% load staticfiles %}
+{% load blog_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>{% block title %}{{ TITLE }}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/github.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+<header class="container">
+  <div class="row margin-tb-2">
+    <div class="col-md-8 col-sm-7 col-xs-4">
+      <h1>{% block page_title %}<a href="/">{{ TITLE }}</a>{% endblock %}</h1>
+    </div>
+    <div class="col-md-4 col-sm-5 col-xs-8">
+      <div>
+        {% if user.is_authenticated %}欢迎您,{{ user }}  | {% endif %}
+        <a href="/">首页</a> | <a href="/admin" target="_blank">CMS</a> |
+        {% if user.is_authenticated %}
+          <a href="{% url 'users:logout' %}">注销</a> |
+          <a href="{% url 'users:password_change' %}">重置密码</a>
+        {% else %}
+          <a href="{% url 'users:register' %}">注册</a> |
+          <a href="{% url 'users:login' %}">登录</a>
+        {% endif %}
+      </div>
+      <div class="search-form">
+        <form role="search" action="{% url 'blog:search' %}">
+          <input type="search" placeholder="请输入关键字" required="" name="q" value="{{ request.GET.q }}">
+          <input type="submit" value="搜索">
+        </form>
+      </div>
+    </div>
+  </div>
+  <hr>
+</header>
+<div class="container">
+  <div class="row">
+    <main class="col-md-8">
+      {% for message in messages %}
+        <div {% if message.tags %}class="alert alert-{{ message.tags }}"{% endif %} role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+      {% block main %}{% endblock %}
+    </main>
+    <aside class="col-md-4">
+      {% block toc %}
+      {% endblock toc %}
+      <div>
+        <h5>最新文章</h5>
+        <ul>
+          {% get_recent_articles as recent_articles %}
+          {% for article in recent_articles %}
+            <li>
+              <a href="{% url 'blog:detail' article.pk %}">{{ article }}</a>
+            </li>
+          {% empty %}
+            暂无记录
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h5>归档</h5>
+        <ul>
+          {% get_archives as archives %}
+          {% for archive in archives %}
+            <li>
+              <a href="{% url 'blog:archive' archive.year archive.month %}">
+                {{ archive.year }} 年 {{ archive.month }} 月
+              </a>
+            </li>
+          {% empty %}
+            暂无归档！
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h5>分类</h5>
+        <ul>
+          {% get_categories as categories %}
+          {% for category in categories %}
+            <li>
+              <a href="{% url 'blog:category' category.pk %}">
+                {{ category }} ({{ category.num_articles }})
+              </a>
+            </li>
+          {% empty %}
+            暂无类别！
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h5>标签云</h5>
+        <ul>
+          {% get_tags as tags %}
+          {% for tag in tags %}
+            <li>
+              <a href="{% url 'blog:tag' tag.pk %}">
+                {{ tag }} ({{ tag.num_articles }})
+              </a>
+            </li>
+          {% empty %}
+            暂无标签！
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <a href="{% url 'rss' %}">RSS订阅</a>
+      </div>
+    </aside>
+  </div>
+</div>
+<footer class="container">
+  <div class="row">
+    <div class="col-md-12 text-center margin-tb-1">
+      <a href="https://www.dongnaoedu.com/" target="_blank"> © 2018 dongnaoedu.com</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

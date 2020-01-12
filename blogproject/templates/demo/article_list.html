@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+<form>
+  <input type="search" name="q" value="{{ request.GET.q }}" placeholder="请输入标题\内容等关键字">
+  <input type="submit" value="搜索">
+</form>
+<a href="{% url 'article:article_add' %}">添加</a>
+<table>
+  <tr>
+    <td>标题</td>
+    <td>作者</td>
+    <td>操作</td>
+  </tr>
+  {% for article in article_list %}
+    <tr>
+      <td>{{ article.title }}</td>
+      <td>{{ article.author }}</td>
+      <td>
+        <a href="{% url 'article:article_update' article.pk %}">编辑</a>
+        <a href="{% url 'article:article_delete' article.pk %}">删除</a>
+      </td>
+    </tr>
+  {% empty %}
+    <h1>暂时还没有记录</h1>
+  {% endfor %}
+</table>
+{% if article_list.has_other_pages %}
+  <nav>
+    {% if article_list.has_previous %}
+      <a href="?page={{ article_list.previous_page_number }}">上一页</a>
+    {% endif %}
+    <strong> {{ article_list.number }} </strong>
+    {% if article_list.has_next %}
+      <a href="?page={{ article_list.next_page_number }}">下一页</a>
+    {% endif %}
+  </nav>
+{% endif %}
+</form>
+</body>
+</html>

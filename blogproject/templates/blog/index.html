@@ -1,0 +1,32 @@
+{% extends 'basic.html' %}
+{% block main %}
+  {% for article in article_list %}
+    <article>
+      <h3>{{ article }}</h3>
+      <div>
+          <span>{{ article.author }} {{ article.created_time }}
+            <a href="{% url 'blog:detail' article.pk %}">阅读({{ article.views }})</a>
+            <a href="{% url 'blog:detail' article.pk %}#coment">评论({{ article.comment_set.count }})</a>
+          </span>
+      </div>
+      <p>{{ article.excerpt }}</p>
+      <div>
+        <a href="{% url 'blog:detail' article.pk %}" class="more-link">继续阅读</a>
+      </div>
+      <hr>
+    </article>
+  {% empty %}
+    <h3>暂时还没有记录</h3>
+  {% endfor %}
+  {% if page_obj.has_other_pages %}
+    <nav class="margin-tb-1 text-center">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ request.GET.q }}">上一页</a>
+      {% endif %}
+      <strong> {{ page_obj.number }} </strong>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ request.GET.q }}">下一页</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}
